@@ -3,21 +3,28 @@ import 'package:movies/src/models/movies_model.dart';
 
 class MovieHorizontal extends StatelessWidget {
   final List<Movie> movies;
+  final Function nextPage;
 
-  MovieHorizontal({@required this.movies});
+  final _pageController = PageController(initialPage: 1, viewportFraction: 0.3);
+
+  MovieHorizontal({@required this.movies, @required this.nextPage});
   @override
   build(BuildContext context) {
     final _screenSize = MediaQuery.of(context).size;
+    _pageController.addListener(() {
+      if (_pageController.position.pixels >=
+          _pageController.position.maxScrollExtent - 200) {
+        print('Cargar siguientes peliculas');
+        nextPage();
+      }
+    });
     return Container(
-        height: _screenSize.height * 0.2,
-        child: PageView(
-          pageSnapping: false,
-          controller: PageController(
-            initialPage: 1,
-            viewportFraction: 0.3
-          ),
-          children: _cards(context),
-        ),
+      height: _screenSize.height * 0.2,
+      child: PageView(
+        pageSnapping: false,
+        controller: _pageController,
+        children: _cards(context),
+      ),
     );
   }
 
@@ -30,18 +37,20 @@ class MovieHorizontal extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(20.0),
               child: FadeInImage(
-              placeholder: AssetImage('assets/img/no-image.jpg'),
-              image: NetworkImage( movie.getPosterImg()),
-              fit: BoxFit.cover,
-              height: 140.0,
+                placeholder: AssetImage('assets/img/no-image.jpg'),
+                image: NetworkImage(movie.getPosterImg()),
+                fit: BoxFit.cover,
+                height: 140.0,
               ),
             ),
-            SizedBox(height: 3.0,),
+            SizedBox(
+              height: 3.0,
+            ),
             Text(
               movie.title,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.caption,
-              )
+            )
           ],
         ),
       );

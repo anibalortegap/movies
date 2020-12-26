@@ -8,6 +8,7 @@ class HomePage extends StatelessWidget {
   final moviesProvider = new MoviesProvider();
   @override
   Widget build(BuildContext context) {
+    moviesProvider.getPopular();
     return Scaffold(
         appBar: AppBar(
           title: Text('Movies In Theaters'),
@@ -39,34 +40,36 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _footer(BuildContext context) {
-      return Container(
-        width: double.infinity,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              padding: EdgeInsets.only(left: 10.0),
-              child: Text(
-                'Populares',
-                style: Theme.of(context).textTheme.subtitle1,
-              ),
+    return Container(
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.only(left: 10.0),
+            child: Text(
+              'Populares',
+              style: Theme.of(context).textTheme.subtitle1,
             ),
-            SizedBox(height: 5.0,),
-            FutureBuilder(
-              future: moviesProvider.getPopular(),
-              builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
-                snapshot.data?.forEach((element) {
-                  print(element.title);
-                });
-                if (snapshot.hasData) {
-                  return MovieHorizontal(movies: snapshot.data);
-                } else {
-                  return Center(child: CircularProgressIndicator());
-                }
-              },
-            )
-          ],
-        ),
+          ),
+          SizedBox(
+            height: 5.0,
+          ),
+          StreamBuilder(
+            stream: moviesProvider.popularesStream,
+            builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
+              snapshot.data?.forEach((element) {
+                print(element.title);
+              });
+              if (snapshot.hasData) {
+                return MovieHorizontal(movies: snapshot.data, nextPage: moviesProvider.getPopular,);
+              } else {
+                return Center(child: CircularProgressIndicator());
+              }
+            },
+          )
+        ],
+      ),
     );
   }
 }
