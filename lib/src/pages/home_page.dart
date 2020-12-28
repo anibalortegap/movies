@@ -59,7 +59,7 @@ class HomePage extends StatelessWidget {
             stream: moviesProvider.popularesStream,
             builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
               snapshot.data?.forEach((element) {
-                print(element.title);
+                // print(element.title);
               });
               if (snapshot.hasData) {
                 return MovieHorizontal(movies: snapshot.data, nextPage: moviesProvider.getPopular,);
