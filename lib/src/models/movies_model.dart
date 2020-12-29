@@ -14,6 +14,8 @@ class Movies {
 }
 
 class Movie {
+  String uuid;
+
   bool adult;
   String backdropPath;
   List<int> genreIds;
